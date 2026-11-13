@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="48" height="48">
+  <!-- Circular container with inspector graphic -->
+  <defs>
+    <linearGradient id="avatarBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1b4958" />
+      <stop offset="100%" stop-color="#0f2b34" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Outer Badge -->
+  <rect x="4" y="4" width="92" height="92" rx="16" fill="url(#avatarBg)" stroke="#38bdf8" stroke-width="2"/>
+  
+  <!-- Inspector Cap / Helmet -->
+  <path d="M 26 38 C 26 22, 74 22, 74 38 Z" fill="#e2e8f0" stroke="#0f172a" stroke-width="2"/>
+  <path d="M 20 38 L 80 38 L 74 44 L 26 44 Z" fill="#0284c7" stroke="#0f172a" stroke-width="1.5"/>
+  <circle cx="50" cy="30" r="4" fill="#f59e0b" />
+  
+  <!-- Face -->
+  <path d="M 32 44 L 68 44 L 66 62 C 66 70, 34 70, 34 62 Z" fill="#fed7aa" stroke="#0f172a" stroke-width="1.5"/>
+  
+  <!-- Safety Goggles / Magnifier Glasses -->
+  <rect x="34" y="47" width="13" height="10" rx="3" fill="#38bdf8" stroke="#0f172a" stroke-width="1.5"/>
+  <rect x="53" y="47" width="13" height="10" rx="3" fill="#38bdf8" stroke="#0f172a" stroke-width="1.5"/>
+  <line x1="47" y1="52" x2="53" y2="52" stroke="#0f172a" stroke-width="2"/>
+  <!-- Goggle Glare -->
+  <line x1="36" y1="49" x2="40" y2="54" stroke="#ffffff" stroke-width="1.5"/>
+  <line x1="55" y1="49" x2="59" y2="54" stroke="#ffffff" stroke-width="1.5"/>
+
+  <!-- Uniform / Coat Collar -->
+  <path d="M 28 72 L 72 72 L 80 92 L 20 92 Z" fill="#0369a1" stroke="#0f172a" stroke-width="1.5"/>
+  <!-- Tie / Badge -->
+  <path d="M 46 72 L 54 72 L 52 86 L 48 86 Z" fill="#f8fafc" stroke="#0f172a" stroke-width="1"/>
+  
+  <!-- Magnifying Glass held in hand -->
+  <circle cx="76" cy="64" r="10" fill="none" stroke="#f59e0b" stroke-width="2.5"/>
+  <circle cx="76" cy="64" r="7" fill="#bae6fd" opacity="0.6"/>
+  <line x1="83" y1="71" x2="90" y2="78" stroke="#94a3b8" stroke-width="3" stroke-linecap="round"/>
+</svg>
