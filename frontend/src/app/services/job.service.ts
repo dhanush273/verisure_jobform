@@ -8,6 +8,7 @@ import { InspectionJob, InspectionType, ApiResponse } from '../models/job.model'
   providedIn: 'root'
 })
 export class JobService {
+  private readonly apiUrl = 'https://192.168.5.157:8000/api';
   private readonly storageKey = 'verisure_jobs_json';
   private jobsSubject = new BehaviorSubject<InspectionJob[]>([]);
   public jobs$ = this.jobsSubject.asObservable();
@@ -42,10 +43,12 @@ export class JobService {
   /**
    * Fetch saved ERP jobs from backend API.
    */
-  public fetchBackendJobs(): Observable<InspectionJob[]> {
-    return this.http.get<InspectionJob[]>('/api/erp-jobs').pipe(
+    public fetchBackendJobs(): Observable<InspectionJob[]> {
+    return this.http.get<InspectionJob[]>(
+      `${this.apiUrl}/jobs`
+    ).pipe(
       catchError(err => {
-        console.warn('Backend /api/erp-jobs unreachable, using local storage cache.', err);
+        console.error('Backend GET error:', err);
         return of([] as InspectionJob[]);
       })
     );
@@ -55,19 +58,29 @@ export class JobService {
    * Save a job both to the backend and to localStorage.
    */
   public saveJob(job: InspectionJob): Observable<ApiResponse> {
+
     job.created_at = job.created_at || new Date().toISOString();
     job.source = job.source || 'VERISURE_ANGULAR17_FORM';
 
-    // Update local storage and in-memory list
+    // Save locally
     const currentJobs = this.jobsSubject.value;
-    const updated = [job, ...currentJobs.filter(j => j.jobNo !== job.jobNo)];
+
+    const updated = [
+      job,
+      ...currentJobs.filter(j => j.jobNo !== job.jobNo)
+    ];
+
     this.saveLocalJobs(updated);
     this.jobsSubject.next(updated);
 
-    // Call backend API
-    return this.http.post<ApiResponse>('/api/jobs', job).pipe(
+    // Send to FastAPI backend
+    return this.http.post<ApiResponse>(
+      `${this.apiUrl}/jobs`,
+      job
+    ).pipe(
       catchError(err => {
-        console.warn('Backend /api/jobs save offline, saved locally.', err);
+        console.error('Backend POST error:', err);
+
         return of({
           status: 'saved_locally',
           job_no: job.jobNo,

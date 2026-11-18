@@ -12,7 +12,7 @@ CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
 PROJECT_ROOT = os.path.abspath(os.path.join(CURRENT_DIR, ".."))
 sys.path.insert(0, PROJECT_ROOT)
 
-DEFAULT_API_URL = "http://localhost:8000/api/jobs"
+DEFAULT_API_URL = "https://192.168.5.157:8000/api/jobs/"
 DEFAULT_JSON_PATH = os.path.join(PROJECT_ROOT, "data", "erp_jobs.json")
 
 # Realistic ERP Reference Data for Industrial Quality Inspection
@@ -293,7 +293,7 @@ def push_job_to_verisure(job_data: Dict[str, Any], api_url: str = DEFAULT_API_UR
     """
     headers = {"Content-Type": "application/json", "Accept": "application/json"}
     try:
-        response = requests.post(api_url, json=job_data, headers=headers, timeout=10)
+        import urllib3; urllib3.disable_warnings(); response = requests.post(api_url, json=job_data, headers=headers, timeout=10, verify=False)
         return {
             "success": response.status_code in (200, 201),
             "status_code": response.status_code,

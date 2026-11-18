@@ -1,100 +1,63 @@
 # VeriSure DigitalQC - Inspection Excellence System
 
-This system implements the exact **VeriSure "Create New Job" form** from your reference screenshots, featuring all symbols, words, and layouts, alongside a **Python ERP Simulator** that fills details, generates ERP jobs, and stores them in JSON.
+This system implements the **VeriSure "Create New Job" web form** for all 5 inspection types, connecting directly to the **VeriSure Django Server** (`https://127.0.0.1:8000/api/jobs/`), alongside a **Python ERP Simulator** that can generate and push mock jobs directly into the database.
 
 ---
 
-## 📸 1. VeriSure "Create New Job" Form (Frontend)
+## 📸 1. Supported Inspection Types & Dynamic Fields
 
-The form matches the VeriSure interface pixel-for-pixel across all **5 Inspection Types**:
+| # | Inspection Type | Department | Dynamic Fields |
+|---|---|---|---|
+| 1 | **Marine Survey** | Marine Survey (ID 2, `L`) | `Vessel Name`, `Survey Type`, `Survey No`, `Survey Date End`, `Survey Location`, `Surveyor Name` |
+| 2 | **Equipment Maintenance** | Equipment Maintenance (ID 3, `H`) | `Equipment Name`, `Serial No`, `Defect Description`, `Maintenance Type` |
+| 3 | **Manufacturing QC** | Manufacturing QC (ID 4, `E`) | `Lot No`, `Part No`, `Part Description`, `Factory Location` |
+| 4 | **Wind Turbine** | Wind Turbine (ID 5, `W`) | `Turbine ID`, `Turbine Location` |
+| 5 | **Material Receipt** | Material Inspection (ID 6, `M`) | `Supplier Name *`, `Purchase Order` |
 
-| # | Inspection Type | Dynamic Fields Displayed |
-|---|---|---|
-| 1 | **Manufacturing QC** | `Lot No`, `Part No`, `Part Description`, `Factory Location` |
-| 2 | **Equipment Maintenance** | `Equipment Name`, `Serial No`, `Defect Description`, `Maintenance Type` |
-| 3 | **Marine Survey** | `Vessel Name`, `Survey Type`, `Survey No`, `Survey Date End`, `Survey Location`, `Surveyor Name` |
-| 4 | **Wind Turbine** | `Turbine ID`, `Turbine Location` |
-| 5 | **Material Receipt** | `Supplier Name *` (red highlight validation), `Purchase Order` |
-
-### Common Form Fields (All 5 Types):
-- `*Job No` (Placeholder: `Enter job number`)
-- `*Job Description` (Placeholder: `Enter job description`)
-- `*Inspection Agency` (Dropdown: `Select or type to add Inspection agency`)
-- `*Inspection Type` (Dropdown: 5 types)
-- `*Inspection Start Date` (Calendar date picker: `Select date`)
-- `*Remarks` (Placeholder: `QC Remark`)
-- `*Inspection Stage` (Dropdown: `Select Inspection Stage`)
-- `*Level` (Dropdown: `Select Level`)
-- Button: `Add Job`
+### Common Form Fields (All Types):
+- `*Job No`
+- `*Job Description`
+- `*Inspection Agency`
+- `*Inspection Type` (5 types)
+- `*Inspection Start Date`
+- `*Remarks`
+- `*Inspection Stage`
+- `*Level`
 
 ---
 
-## 🚀 2. How to Launch the Web Form
+## 🚀 2. How to Run the Web Form
 
-You can run the Angular 17 frontend in two ways:
+1. Ensure the VeriSure Django Server is running:
+   ```bash
+   cd D:\AZURE_VeriSure\VeriSure
+   .\backendvenv\Scripts\activate
+   python manage.py runserver_plus --cert-file cert.crt 0.0.0.0:8000
+   ```
 
-### Option A: Angular 17 Development Server (Recommended for Frontend Dev)
-```bash
-cd frontend
-npm start
-```
-This runs `ng serve` with live reload at **`http://localhost:4200`** and proxies API calls (`/api`) to the backend.
+2. Start the Angular Job Creation Form:
+   ```bash
+   cd D:\VS_JobCreation\veri_sure_jobform\frontend
+   npm start
+   ```
+   Open **`http://localhost:4200`** in your browser.
 
-### Option B: Python FastAPI App (Serves Built Angular 17 SPA on Port 4200)
-Run from the `verisure_system` directory:
-```bash
-python run_app.py
-```
-This serves the compiled Angular 17 application at **`http://localhost:4200`** and provides backend JSON persistence at `/api/jobs` and `/api/erp-jobs`.
-
-To recompile the Angular frontend after making code changes:
-```bash
-cd frontend
-npm run build
-```
+When you fill the form and click **Add Job**, the form automatically submits the job via the proxy to `https://127.0.0.1:8000/api/jobs/`.
 
 ---
 
-## 🐍 3. Python ERP Simulator (Fill Details & Generate ERP)
+## 🐍 3. Python ERP Simulator
 
-The Python script `erp_simulator/erp_simulator.py` simulates an Enterprise Resource Planning (ERP) system (e.g. SAP S/4HANA QM / Oracle Fusion) generating inspection jobs.
+To simulate ERP job generation and push directly to VeriSure:
 
-### A. Auto-Generate 5 Jobs (1 for each Inspection Type):
 ```bash
-cd verisure_system/erp_simulator
-python erp_simulator.py
-```
-Outputs:
-- Generates 5 realistic industrial jobs.
-- Automatically stores them into `verisure_system/data/erp_jobs.json`.
+cd D:\VS_JobCreation\veri_sure_jobform\erp_simulator
 
-### B. Interactive CLI Mode (Fill details manually in terminal):
-```bash
-python erp_simulator.py --interactive
-```
-Walks you through step-by-step prompts to fill details for any of the 5 inspection types.
+# Generate 5 jobs and push directly to VeriSure:
+python erp_simulator.py --push
 
-### C. Generate Specific Type or Custom Batch:
-```bash
-# Generate 10 jobs:
-python erp_simulator.py --generate 10
-
-# Generate specifically for 'Marine Survey':
-python erp_simulator.py --generate 3 --type "Marine Survey"
+# Generate 3 Marine Survey jobs and push:
+python erp_simulator.py --push --generate 3 --type "Marine Survey"
 ```
 
----
-
-## 💾 4. Storing Data in JSON
-
-All generated ERP jobs and form submissions are saved in structured JSON:
-- **Path**: `verisure_system/data/erp_jobs.json`
-- In the Web UI:
-  - Fill the form and click **"Add Job"** to submit and save the job into `data/erp_jobs.json`.
-  - Click **"⚡ Simulate ERP Data"** to auto-fill the form with realistic mock data for any inspection type.
-
----
-
-## 🔌 5. API to Push JSON to VeriSure (Prepared for Later)
-Per your note: *(“this point we will do later”)*
-- The Pydantic schemas in `backend/models.py` and the `push_job_to_verisure()` method in `erp_simulator.py` are already structured and ready to connect whenever you want to activate the external endpoint.
+Jobs are ingested immediately and available for inspection in **VeriSureTab**.
